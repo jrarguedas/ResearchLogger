@@ -127,7 +127,7 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
                                              cropbox.topleft.y, cropbox.size.x,
                                              cropbox.size.y, X.ZPixmap,
                                              AllPlanes)
-                image_data = Image.fromstring("RGBX", (cropbox.size.x,
+                image_data = Image.frombytes("RGBX", (cropbox.size.x,
                                                        cropbox.size.y),
                                               raw.data, "raw",
                                               "BGRX").convert("RGB")
