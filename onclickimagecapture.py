@@ -23,7 +23,6 @@
 #
 # 2015 modifications by Roxana Lafuente <roxana.lafuente@gmail.com>
 ##############################################################################
-
 from baseeventclasses import *
 
 from myutils import (_settings, _cmdoptions, OnDemandRotatingFileHandler,
@@ -36,6 +35,7 @@ import time
 import re
 import copy
 import Image
+from imageprocessing import *
 import datetime
 
 if os.name == 'nt':
@@ -59,7 +59,7 @@ elif os.name == 'posix':
     resolution = display.Display().screen().root.get_geometry()
     resolution = str(resolution.width) + 'x' + str(resolution.height)
 
-
+i = 0
 class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
     '''
         On-click image capture, first stage: prepare data.
@@ -94,6 +94,14 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
                 self.logger.debug(self.print_event(event))
                 process_name = self.get_process_name(event)
                 image_data = self.capture_image(event)
+
+                x = event.Position[0]
+                y = event.Position[1]
+                global i
+                i += 1
+                if i%2==0: #since down and up click events are used as triggers...
+                    find_polys(image_data,x,y)
+
                 self.sst_q.put((process_name, image_data, self.username, event))
             else:
                 self.logger.debug('not a useful event: ' + eventmn)
@@ -110,7 +118,8 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
         # The cropbox will take care of making sure our image is within
         # screen boundaries.
         cropbox = CropBox(topleft=Point(0, 0),
-                          bottomright=self.imagedimensions,
+                          bottomright=screensize,
+                          #bottomright=self.imagedimensions,
                           min=Point(0, 0),
                           max=screensize)
         cropbox.reposition(Point(event.Position[0],
