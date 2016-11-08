@@ -40,6 +40,7 @@ where __YOUR_CHOSEN_PATH__ is the directory where you would like to save the tar
 - Enter the subject name.
 - Select the text of the experiment you are running.
 - Then the window opens and, once the subject is finished with the task, the window can be closed by using the X button.
+
 **Important**: Please note that you need to run the key-logger separately and that the GUI does not automatically start the key-logger.
 
 

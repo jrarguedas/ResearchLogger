@@ -36,9 +36,9 @@ import time
 import re
 import copy
 try:
-    import Image
-except ImportError:
     import PIL.Image as Image
+except ImportError:
+    import Image
 import datetime
 
 if os.name == 'nt':
@@ -130,10 +130,14 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
                                              cropbox.topleft.y, cropbox.size.x,
                                              cropbox.size.y, X.ZPixmap,
                                              AllPlanes)
-                image_data = Image.frombytes("RGBX", (cropbox.size.x,
-                                                       cropbox.size.y),
-                                              raw.data, "raw",
-                                              "BGRX").convert("RGB")
+                try:
+                    image_data = Image.frombytes("RGBX", (cropbox.size.x, cropbox.size.y),
+                                                 raw.data, "raw",
+                                                 "BGRX").convert("RGB")
+                except AttributeError:
+                    image_data = Image.fromstring("RGBX", (cropbox.size.x, cropbox.size.y),
+                                                 raw.data, "raw",
+                                                 "BGRX").convert("RGB")
                 return image_data
             except error.BadDrawable:
                 print "bad drawable when attempting to get an image!  Closed "
