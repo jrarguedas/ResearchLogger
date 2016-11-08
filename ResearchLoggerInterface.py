@@ -57,17 +57,17 @@ class TranslationWindow(Frame):
         self.parent = parent
         self.path = path
         # Gets the subject name.
-        self.username = self.getUsername()
+        self.username = self.get_username()
         # Gets the source text.
-        self.filename = self.getFilename()
+        self.filename = self.get_filename()
         # Starts the User Interface.
         # For the experiments with translation memories, we don't need a
         # graphical interface.
-        self.initUI()
+        self.init_ui()
         # Updates the source tex.
-        self.setFilename(self.filename)
+        self.set_filename(self.filename)
 
-    def getUsername(self):
+    def get_username(self):
         """
             Gets the subject ID.
         """
@@ -100,7 +100,7 @@ class TranslationWindow(Frame):
         logdir = "logs-" + username
         return logdir in os.listdir(os.getcwd())
 
-    def getFilename(self):
+    def get_filename(self):
         """
             Selects a file using tkFileDialog.
         """
@@ -111,14 +111,15 @@ class TranslationWindow(Frame):
         filename = dlg.show()
         return filename
 
-    def initUI(self):
+    def init_ui(self):
         """
             Initiates the User Interface.
         """
+        self.start_time = time.strftime("%Y-%m-%d %H:%M:%S")
         self.parent.title(WINDOWTITLE)
 
         # Overrides the default behavious of the close button.
-        self.parent.protocol("WM_DELETE_WINDOW", self.onExit)
+        self.parent.protocol("WM_DELETE_WINDOW", self.on_exit)
 
         # Menu Bar.
         menubar = Menu(self.parent)
@@ -138,7 +139,7 @@ class TranslationWindow(Frame):
                                state='normal', font="Verdana 12")
         self.targettext.pack(fill=BOTH, expand=1, padx=10, pady=5)
 
-    def setFilename(self, filename):
+    def set_filename(self, filename):
         """
             Tries to open a file that contains the source code.
         """
@@ -153,7 +154,7 @@ class TranslationWindow(Frame):
             msg = "Error de I/O al abrir el archivo que contiene el texto "
             msg += "fuente. Error {0}: {1}."
             print msg.format(ioe.errno, ioe.strerror)
-            self.onExit()
+            self.on_exit()
             sys.exit(1)  # Abnormal termination.
         except:
             msg = "Error fatal al abrir el archivo que contiene el texto "
@@ -175,7 +176,7 @@ class TranslationWindow(Frame):
             # user.
             self.sourcetext.config(state=DISABLED)
 
-    def saveDefault(self, fname, tstmp):
+    def save_default(self, fname, tstmp):
         """
             Saves the translation on a default dir.
         """
@@ -184,7 +185,7 @@ class TranslationWindow(Frame):
         filename = BASE_PATH + '/' + self.username + '_' + fname + '_' + tstmp + EXTENSION
         self.f = codecs.open(filename, mode='w+', encoding="utf-8")
 
-    def onSave(self):
+    def on_save(self):
         """
             Saves the content of the targettext field into a file named
             user_text.txt.
@@ -200,8 +201,10 @@ class TranslationWindow(Frame):
         fname = fname.split('.')[0]
         filename = self.path + self.username + '_' + fname + '_' + tstmp + EXTENSION
         print "Guardando archivo:", filename
-        # Gets the target text.
-        ttext = self.targettext.get(0.0, END)
+        # Gets the target text and set the start and end timestamps.
+        self.end_time = time.strftime("%Y-%m-%d %H:%M:%S")
+        ttext = "Start time: %s\nEnd time: %s\n" % (self.start_time, self.end_time)
+        ttext += "Final document:\n" + self.targettext.get(0.0, END)
         # Creates the file where the target text will be saved.
         try:
             directory = filename.split('/')
@@ -215,13 +218,13 @@ class TranslationWindow(Frame):
             # Tries to create a file that already exists.
             msg = "Error fatal al guardar el texto meta:"
             print msg, sys.exc_info()[0]
-            self.onExit(False)
-            self.saveDefault(fname, tstmp)
+            self.on_exit(False)
+            self.save_default(fname, tstmp)
             sys.exit(1)  # Abnormal termination.
         except OSError:
             msg = "Imposible crear el directorio especificado.\n"
             print msg
-            self.saveDefault(fname, tstmp)
+            self.save_default(fname, tstmp)
         try:
             # Save the translated text in a file.
             self.f.write(ttext)
@@ -231,13 +234,13 @@ class TranslationWindow(Frame):
             sys.exit(1)
         self.f.close()
 
-    def onExit(self, saves=True):
+    def on_exit(self, saves=True):
         """
             Saves the target text before exiting the translation interface.
         """
         assert(isinstance(saves, bool))
         if saves:
-            self.onSave()
+            self.on_save()
         self.parent.destroy()
 
 
