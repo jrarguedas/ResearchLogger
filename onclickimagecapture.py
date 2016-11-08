@@ -281,7 +281,7 @@ class OnClickImageCaptureSecondStage(SecondStageBaseEventClass):
             savefilename = os.path.join(
                 self.settings['General']['Log Directory'],
                 self.subsettings['General']['Log Subdirectory'],
-                self.parse_filename(username, process_name))
+                self.last_image_name)
             qualitysetting = self.subsettings['General']['Click Image Quality']
             image_data.save(savefilename, quality=qualitysetting)
         except Empty:
@@ -326,10 +326,12 @@ class OnClickImageCaptureSecondStage(SecondStageBaseEventClass):
         filepattern = self.subsettings['General']['Click Image Filename']
         fileextension = self.subsettings['General']['Click Image Format']
         fhour = '%Y%m%d_%H%M%S_'
-        filepattern = re.sub(r'%time%', datetime.datetime.today().strftime(fhour) + str(datetime.datetime.today().microsecond), filepattern)
+        today = datetime.datetime.today()
+        filepattern = re.sub(r'%time%', today.strftime(fhour) + str(today.microsecond), filepattern)
         filepattern = re.sub(r'%processname%', process_name, filepattern)
         filepattern = re.sub(r'%username%', username, filepattern)
         filepattern = filepattern + '.' + fileextension
+        self.last_image_name = filepattern
         return filepattern
 
     def cancel(self):
