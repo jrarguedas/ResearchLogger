@@ -29,7 +29,7 @@ python ResearchLogger.py
 ````
 python ResearchLoggerInterface.py -d YOUR_CHOSEN_PATH
 ````
-where YOUR_CHOSEN_PATH is the directory where you would like to save the target text (the output). If you do not specify a directory:
+where __YOUR_CHOSEN_PATH__ is the directory where you would like to save the target text (the output). If you do not specify a directory:
 ````
 python ResearchLoggerInterface.py
 ````
@@ -51,14 +51,15 @@ python ResearchLoggerInterface.py
 
 ## Output:
 ResearchLogger generates four folders:
-- click_images: Contains images of every "click" made during the logging session.
-- detailed_log: Contains a registry of every "keystroke" that occurred during the logging session.
-- system_log: Contains a detailed registry of system errors that may have occurred as well as info on the system activity.
-- timed_screenshots: Every some fixed period of time, the program will take a screen-shot and save it to this folder.
+- **click_images**: Contains images of every "click" made during the logging session.
+- **detailed_log**: Contains a registry of every "keystroke" that occurred during the logging session.
+- **system_log**: Contains a detailed registry of system errors that may have occurred as well as info on the system activity.
+- **timed_screenshots**: Every some fixed period of time, the program will take a screen-shot and save it to this folder.
 
 When using the GUI, a file is generated with:
 - The start and end time of the session.
 - The final product that the subject was working on.
+
 **Important**: Please note that you need to run the key-logger separately and that the GUI does not automatically start the key-logger.
 
 
