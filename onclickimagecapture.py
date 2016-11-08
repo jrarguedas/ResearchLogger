@@ -35,7 +35,10 @@ import logging
 import time
 import re
 import copy
-import Image
+try:
+    import Image
+except ImportError:
+    import PIL.Image as Image
 import datetime
 
 if os.name == 'nt':
