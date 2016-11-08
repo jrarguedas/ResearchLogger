@@ -25,15 +25,6 @@ Extension of PyKeylogger, an open-source Python key-logger. Intended for all kin
 ````
 python ResearchLogger.py
 ````
-- To start the translation window (without the key-logger):
-````
-python ResearchLoggerInterface.py -d YOUR_CHOSEN_PATH
-````
-where __YOUR_CHOSEN_PATH__ is the directory where you would like to save the target text (the output). If you do not specify a directory:
-````
-python ResearchLoggerInterface.py
-````
-by default it will save the file on the current directory.
 - To stop the key-logger, you should press the combo:
 ````
 CTRL left + CTRL right + F12
@@ -43,11 +34,14 @@ The default password is empty. Then go to "Actions" > "Quit"
 ### With GUI:
 - To start the GUI run:
 ````
-python ResearchLoggerInterface.py
+python ResearchLoggerInterface.py -d YOUR_CHOSEN_PATH
 ````
+where __YOUR_CHOSEN_PATH__ is the directory where you would like to save the target text (the output). If you do not specify a directory, by default it will save the file on the current directory. Then follow the steps:
 - Enter the subject name.
 - Select the text of the experiment you are running.
 - Then the window opens and, once the subject is finished with the task, the window can be closed by using the X button.
+**Important**: Please note that you need to run the key-logger separately and that the GUI does not automatically start the key-logger.
+
 
 ## Output:
 ResearchLogger generates four folders:
@@ -59,8 +53,6 @@ ResearchLogger generates four folders:
 When using the GUI, a file is generated with:
 - The start and end time of the session.
 - The final product that the subject was working on.
-
-**Important**: Please note that you need to run the key-logger separately and that the GUI does not automatically start the key-logger.
 
 
 ## Supported platforms:
