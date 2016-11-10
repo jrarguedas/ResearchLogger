@@ -29,7 +29,7 @@ python ResearchLogger.py
 ````
 python ResearchLoggerInterface.py -d YOUR_CHOSEN_PATH
 ````
-where __YOUR_CHOSEN_PATH__ is the directory where you would like to save the target text (the output). If you do not specify a directory:
+where YOUR_CHOSEN_PATH is the directory where you would like to save the target text (the output). If you do not specify a directory:
 ````
 python ResearchLoggerInterface.py
 ````
@@ -46,8 +46,11 @@ The default password is empty. Then go to "Actions" > "Quit"
 python ResearchLoggerInterface.py
 ````
 - Enter the subject name.
+![](images/insert_subject_window.png)
 - Select the text of the experiment you are running.
+![](images/load_source_text_window.png)
 - Then the window opens and, once the subject is finished with the task, the window can be closed by using the X button.
+![](images/translation_window.png)
 
 ## Output:
 ResearchLogger generates four folders:
