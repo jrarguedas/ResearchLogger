@@ -46,10 +46,15 @@ The default password is empty. Then go to "Actions" > "Quit"
 python ResearchLoggerInterface.py
 ````
 - Enter the subject name.
+
 ![](images/insert_subject_window.png)
+
 - Select the text of the experiment you are running.
+
 ![](images/load_source_text_window.png)
+
 - Then the window opens and, once the subject is finished with the task, the window can be closed by using the X button.
+
 ![](images/translation_window.png)
 
 ## Output:
