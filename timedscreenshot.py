@@ -100,13 +100,13 @@ class TimedScreenshotSecondStage(SecondStageBaseEventClass):
                     self.subsettings['General']['Screenshot Interval']:
                 if self.q.isSet():
                     self.logger.debug("capturing timed screenshot...")
-
                     try:
                         savefilename = os.path.join(
                             self.settings['General']['Log Directory'],
                             self.subsettings['General']['Log Subdirectory'],
                             self.parse_filename())
                         self.capture_image(savefilename)
+                        self.write_to_logfile(savefilename)
                     finally:
                         self.q.clear()
                         self.sleep_counter = 0
@@ -116,6 +116,10 @@ class TimedScreenshotSecondStage(SecondStageBaseEventClass):
                               "screenshot loop...\nhere it is:\n",
                               exc_info=True)
             pass  # let's keep iterating
+
+    def write_to_logfile(self, savefilename):
+        # TODO: Do not hardcode pipe
+        self.logger.info(str(time.time()) + "|" + savefilename)
 
     def capture_image(self, savefilename):
 
