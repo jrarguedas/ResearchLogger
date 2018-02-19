@@ -31,6 +31,7 @@ import os.path
 import logging
 import time
 import sys
+from psutil import Process
 
 if os.name == 'posix':
     pass
@@ -114,6 +115,7 @@ class DetailedLogWriterFirstStage(FirstStageBaseEventClass):
             Acquire the process name from the window handle for use in the log
             filename.
         '''
+
         if os.name == 'nt':
             hwnd = event.Window
             try:
@@ -130,6 +132,7 @@ class DetailedLogWriterFirstStage(FirstStageBaseEventClass):
                 return "noprocname"
         elif os.name == 'posix':
             return to_unicode(event.WindowProcName)
+
 
     def spawn_second_stage_thread(self):
         self.sst_q = Queue(0)

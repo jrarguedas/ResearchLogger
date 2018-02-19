@@ -24,22 +24,24 @@
 # 2015 modifications by Roxana Lafuente <roxana.lafuente@gmail.com>
 ##############################################################################
 
-from baseeventclasses import *
-
-from myutils import (_settings, _cmdoptions, OnDemandRotatingFileHandler,
-                     to_unicode)
-from Queue import Queue, Empty
+import copy
+import datetime
+import logging
 import os
 import os.path
-import logging
-import time
 import re
-import copy
-try:
-    import PIL.Image as Image
-except ImportError:
-    import Image
-import datetime
+import time
+from Queue import Queue, Empty
+
+import gtk
+import pyautogui
+import numpy as np
+import cv2
+from psutil import Process
+
+from baseeventclasses import *
+from myutils import (to_unicode)
+
 
 if os.name == 'nt':
     import win32api
@@ -54,13 +56,20 @@ elif os.name == 'posix':
 # from constants import MLEFT, MMIDDLE, MRIGHT, IELIST, IEVENTLISTSIZE
 from constants import MLEFT, MMIDDLE, MRIGHT, MOUSE, IELIST, IEVENTLISTSIZE
 
-
+'''
 # Just once get the screen resolution. If it changes in the process bad luck!
 if os.name == 'nt':
     resolution = str(win32api.GetSystemMetrics(0)) + 'x' + str(win32api.GetSystemMetrics(1))
 elif os.name == 'posix':
     resolution = display.Display().screen().root.get_geometry()
     resolution = str(resolution.width) + 'x' + str(resolution.height)
+'''
+
+width = gtk.gdk.screen_width()
+height = gtk.gdk.screen_height()
+resolution = str(width) + "x" + str(height)
+#resolution1 = display.Display().screen().root.get_geometry().height
+print resolution
 
 
 class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
@@ -83,8 +92,8 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
                   self.subsettings['General']['Click Image Height'])
 
         # Hook to our display.
-        if os.name == 'posix':
-            self.local_dpy = display.Display()
+        #if os.name == 'posix':
+        #    self.local_dpy = display.Display()
 
     def process_event(self):
         try:
@@ -109,71 +118,66 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
 
     def capture_image(self, event):
         screensize = self.get_screen_size()
+        print screensize
+        print event.Position[0]
+        print event.Position[1]
 
-        # The cropbox will take care of making sure our image is within
-        # screen boundaries.
         cropbox = CropBox(topleft=Point(0, 0),
                           bottomright=self.imagedimensions,
                           min=Point(0, 0),
                           max=screensize)
         cropbox.reposition(Point(event.Position[0],
                                  event.Position[1]))
+        
+        print "Puntos"
+        print cropbox.topleft.x
+        print cropbox.topleft.y
+        print cropbox.size.x
+        print cropbox.size.y
+        print "finish"
+        print "x:", event.Position[0]-cropbox.topleft.x
+        print "y:", event.Position[1]-cropbox.topleft.y
+        print self.imagedimensions
 
-        self.logger.debug(cropbox)
-
-        if os.name == 'posix':
-            AllPlanes = 0xffffffff
-            try:
-                # cropbox.topleft.x, cropbox.topleft.y,
-                # cropbox.size.x, cropbox.size.y, self.savefilename
-                raw = self.rootwin.get_image(cropbox.topleft.x,
-                                             cropbox.topleft.y, cropbox.size.x,
-                                             cropbox.size.y, X.ZPixmap,
-                                             AllPlanes)
-                try:
-                    image_data = Image.frombytes("RGBX", (cropbox.size.x, cropbox.size.y),
-                                                 raw.data, "raw",
-                                                 "BGRX").convert("RGB")
-                except AttributeError:
-                    image_data = Image.fromstring("RGBX", (cropbox.size.x, cropbox.size.y),
-                                                 raw.data, "raw",
-                                                 "BGRX").convert("RGB")
-                return image_data
-            except error.BadDrawable:
-                print "bad drawable when attempting to get an image!  Closed "
-                "the window?"
-            except error.BadMatch:
-                print "bad match when attempting to get an image! probably"
-                " specified an area outside the window (too big?)"
-            except error.BadValue:
-                print "getimage: bad value error - tell me about this one,"
-                " I've not managed to make it happen yet"
-            except:
-                print self.logger.debug('Error in getimage.', exc_info=True)
-
-        if os.name == 'nt':
-            image_data = ImageGrab.grab((cropbox.topleft.x, cropbox.topleft.y,
-                                         cropbox.bottomright.x,
-                                         cropbox.bottomright.y))
-            return image_data
+        w = screensize.x
+        h = screensize.y
+        d1 = self.imagedimensions.x
+        d2 = self.imagedimensions.y
+        print d1,d2
+        image_data = pyautogui.screenshot(region=((cropbox.topleft.x,cropbox.topleft.y,cropbox.size.x,cropbox.size.y)))
+        #image_data = cv2.cvtColor(np.array(image_data), cv2.COLOR_RGB2BGR)
+        #cv2.imwrite("in_memory_to_disk.png", image_data)
+        image_data.save("image_todisk.png")
+        return image_data
 
     def get_screen_size(self):
+
+        width = gtk.gdk.screen_width()
+        height = gtk.gdk.screen_height()
+        #print width
+        #print height
+        return Point(width,height)
+        '''
+
         if os.name == 'posix':
             self.rootwin = \
                 self.local_dpy.get_input_focus().focus.query_tree().root
             if self.rootwin == 0:
                 self.rootwin = self.local_dpy.get_input_focus()
+            print self.rootwin.get_geometry().width,self.rootwin.get_geometry().height
             return Point(self.rootwin.get_geometry().width,
                          self.rootwin.get_geometry().height)
         if os.name == 'nt':
             return Point(win32api.GetSystemMetrics(0),
                          win32api.GetSystemMetrics(1))
 
+        '''
     def get_process_name(self, event):
         '''
             Acquire the process name from the window handle for use in the log
             filename.
         '''
+
         if os.name == 'nt':
             hwnd = event.Window
             try:
@@ -287,7 +291,8 @@ class OnClickImageCaptureSecondStage(SecondStageBaseEventClass):
                 self.subsettings['General']['Log Subdirectory'],
                 self.last_image_name)
             qualitysetting = self.subsettings['General']['Click Image Quality']
-            image_data.save(savefilename, quality=qualitysetting)
+            #cv2.imwrite(savefilename, image_data)
+            image_data.save(savefilename)#, quality=qualitysetting)
         except Empty:
             # Check if the minute has rolled over, if so, write it out.
             if self.eventlist[:2] != range(2) and \

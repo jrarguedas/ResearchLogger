@@ -31,6 +31,7 @@ import time
 import re
 import sys
 import datetime
+import pyautogui
 if os.name == 'nt':
     import win32api
     import ImageGrab
@@ -123,6 +124,7 @@ class TimedScreenshotSecondStage(SecondStageBaseEventClass):
 
     def capture_image(self, savefilename):
 
+        '''
         screensize = self.get_screen_size()
 
         # The cropbox will take care of making sure our image is within
@@ -169,14 +171,14 @@ class TimedScreenshotSecondStage(SecondStageBaseEventClass):
                                          cropbox.bottomright.y))
             image_data.save(savefilename,
                             quality=self.subsettings['General']['Screenshot Image Quality'])
-
+        '''
+        image_data = pyautogui.screenshot()
+        image_data.save(savefilename)
+    '''
     def get_screen_size(self):
-        if os.name == 'posix':
-            return Point(gtk.gdk.screen_width(),
+        return Point(gtk.gdk.screen_width(),
                          gtk.gdk.screen_height())
-        if os.name == 'nt':
-            return Point(win32api.GetSystemMetrics(0),
-                         win32api.GetSystemMetrics(1))
+    '''
 
     def parse_filename(self):
         filepattern = self.subsettings['General']['Screenshot Image Filename']
