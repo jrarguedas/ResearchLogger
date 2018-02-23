@@ -43,7 +43,7 @@ else:
     sys.exit()
 from baseeventclasses import (FirstStageBaseEventClass,
                               SecondStageBaseEventClass)
-from onclickimagecapture import CropBox, Point
+from onclickimagecapture import Point
 from constants import IMG_SET, TIMEDATE
 
 
@@ -123,62 +123,8 @@ class TimedScreenshotSecondStage(SecondStageBaseEventClass):
         self.logger.info(str(time.time()) + "|" + savefilename)
 
     def capture_image(self, savefilename):
-
-        '''
-        screensize = self.get_screen_size()
-
-        # The cropbox will take care of making sure our image is within
-        # screen boundaries.
-        cropbox = CropBox(topleft=Point(0, 0),
-                          bottomright=screensize,
-                          min=Point(0, 0),
-                          max=screensize)
-
-        self.logger.debug(cropbox)
-
-        if os.name == 'posix':
-
-            screengrab = gtk.gdk.Pixbuf(
-                gtk.gdk.COLORSPACE_RGB,
-                False,
-                8,
-                screensize.x,
-                screensize.y)
-
-            screengrab.get_from_drawable(
-                gtk.gdk.get_default_root_window(),
-                gtk.gdk.colormap_get_system(),
-                0, 0, 0, 0,
-                screensize.x,
-                screensize.y)
-
-            save_options_dict = {}
-            img_format = self.subsettings['General']['Screenshot Image Format']
-            img_format.lower()
-            img_quality = to_unicode(
-                self.subsettings['General']['Screenshot Image Quality'])
-            if img_format in IMG_SET:
-                self.subsettings['General']['Screenshot Image Format'] = 'jpeg'
-                save_options_dict = {'quality': img_quality}
-
-            screengrab.save(savefilename,
-                            self.subsettings['General']['Screenshot Image Format'],
-                            save_options_dict)
-
-        if os.name == 'nt':
-            image_data = ImageGrab.grab((cropbox.topleft.x, cropbox.topleft.y,
-                                         cropbox.bottomright.x,
-                                         cropbox.bottomright.y))
-            image_data.save(savefilename,
-                            quality=self.subsettings['General']['Screenshot Image Quality'])
-        '''
         image_data = pyautogui.screenshot()
         image_data.save(savefilename)
-    '''
-    def get_screen_size(self):
-        return Point(gtk.gdk.screen_width(),
-                         gtk.gdk.screen_height())
-    '''
 
     def parse_filename(self):
         filepattern = self.subsettings['General']['Screenshot Image Filename']

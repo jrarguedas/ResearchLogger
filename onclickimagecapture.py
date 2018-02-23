@@ -35,9 +35,6 @@ from Queue import Queue, Empty
 
 import gtk
 import pyautogui
-import numpy as np
-import cv2
-from psutil import Process
 
 from baseeventclasses import *
 from myutils import (to_unicode)
@@ -117,61 +114,34 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
             pass  # let's keep iterating
 
     def capture_image(self, event):
+        #screensize width heigth
         screensize = self.get_screen_size()
-        print screensize
-        print event.Position[0]
-        print event.Position[1]
 
-        cropbox = CropBox(topleft=Point(0, 0),
-                          bottomright=self.imagedimensions,
-                          min=Point(0, 0),
-                          max=screensize)
-        cropbox.reposition(Point(event.Position[0],
-                                 event.Position[1]))
-        
-        print "Puntos"
-        print cropbox.topleft.x
-        print cropbox.topleft.y
-        print cropbox.size.x
-        print cropbox.size.y
-        print "finish"
-        print "x:", event.Position[0]-cropbox.topleft.x
-        print "y:", event.Position[1]-cropbox.topleft.y
-        print self.imagedimensions
+        #Position x,y
+        x = event.Position[0]
+        y = event.Position[1]
 
-        w = screensize.x
-        h = screensize.y
-        d1 = self.imagedimensions.x
-        d2 = self.imagedimensions.y
-        print d1,d2
-        image_data = pyautogui.screenshot(region=((cropbox.topleft.x,cropbox.topleft.y,cropbox.size.x,cropbox.size.y)))
-        #image_data = cv2.cvtColor(np.array(image_data), cv2.COLOR_RGB2BGR)
-        #cv2.imwrite("in_memory_to_disk.png", image_data)
-        image_data.save("image_todisk.png")
+        #take the highest point left and the lowest point right. (to form a rectangle cropbox)
+        x1 = x - (screensize.x / 4)
+        x2 = x + (screensize.x / 4)
+        y1 = y - (screensize.y / 4)
+        y2 = y + (screensize.y / 4)
+
+        #width and height
+        w = x2 - x1
+        h = y2 - y1
+
+        #take a cropbox
+        image_data = pyautogui.screenshot(region=((x1,y1, w, h)))
+
         return image_data
 
     def get_screen_size(self):
-
         width = gtk.gdk.screen_width()
         height = gtk.gdk.screen_height()
-        #print width
-        #print height
+
         return Point(width,height)
-        '''
 
-        if os.name == 'posix':
-            self.rootwin = \
-                self.local_dpy.get_input_focus().focus.query_tree().root
-            if self.rootwin == 0:
-                self.rootwin = self.local_dpy.get_input_focus()
-            print self.rootwin.get_geometry().width,self.rootwin.get_geometry().height
-            return Point(self.rootwin.get_geometry().width,
-                         self.rootwin.get_geometry().height)
-        if os.name == 'nt':
-            return Point(win32api.GetSystemMetrics(0),
-                         win32api.GetSystemMetrics(1))
-
-        '''
     def get_process_name(self, event):
         '''
             Acquire the process name from the window handle for use in the log
@@ -368,45 +338,3 @@ class Point:
 
     def __sub__(self, other):
         return Point(self.x - other.x, self.y - other.y)
-
-
-class CropBox:
-    def __init__(self, topleft=Point(0, 0), bottomright=Point(100, 100),
-                 min=Point(0, 0), max=Point(1600, 1200)):
-        self.topleft = copy.deepcopy(topleft)
-        self.bottomright = copy.deepcopy(bottomright)
-        self.min = copy.deepcopy(min)
-        self.max = copy.deepcopy(max)
-        self.size = self.bottomright - self.topleft
-        self.maxsize = self.max - self.min
-        # Make sure our box is not bigger than the whole image.
-        if (self.size.x > self.maxsize.x):
-            self.bottomright.x = \
-                self.bottomright.x - self.size.x + self.maxsize.x
-        if (self.size.y > self.maxsize.y):
-            self.bottomright.y = \
-                self.bottomright.y - self.size.y + self.maxsize.y
-        self.center = Point(self.size.x/2 + self.topleft.x,
-                            self.size.y/2 + self.topleft.y)
-
-    def move(self, xmove=0, ymove=0):
-        # Make sure we can't move beyond image boundaries.
-        if (self.topleft.x + xmove < self.min.x):
-            xmove = self.topleft.x - self.min.x
-        if (self.topleft.y + ymove < self.min.y):
-            ymove = self.topleft.y - self.min.y
-        if (self.bottomright.x + xmove > self.max.x):
-            xmove = self.max.x - self.bottomright.x
-        if (self.bottomright.y + ymove > self.max.y):
-            ymove = self.max.y - self.bottomright.y
-        self.topleft.move(xmove, ymove)
-        self.bottomright.move(xmove, ymove)
-        self.center = Point(self.size.x/2 + self.topleft.x,
-                            self.size.y/2 + self.topleft.y)
-
-    def reposition(self, newcenter=Point(500, 500)):
-        motion = newcenter - self.center
-        self.move(motion.x, motion.y)
-
-    def __str__(self):
-        return str(self.topleft) + str(self.bottomright)
