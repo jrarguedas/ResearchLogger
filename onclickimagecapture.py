@@ -44,29 +44,17 @@ if os.name == 'nt':
     import win32api
     import win32con
     import win32process
-    import ImageGrab
-elif os.name == 'posix':
-    from Xlib import X, display, error  # , XK
-    from Xlib.ext import record
-    from Xlib.protocol import rq
 
 # from constants import MLEFT, MMIDDLE, MRIGHT, IELIST, IEVENTLISTSIZE
 from constants import MLEFT, MMIDDLE, MRIGHT, MOUSE, IELIST, IEVENTLISTSIZE
 
-'''
-# Just once get the screen resolution. If it changes in the process bad luck!
-if os.name == 'nt':
-    resolution = str(win32api.GetSystemMetrics(0)) + 'x' + str(win32api.GetSystemMetrics(1))
-elif os.name == 'posix':
-    resolution = display.Display().screen().root.get_geometry()
-    resolution = str(resolution.width) + 'x' + str(resolution.height)
-'''
 
+# Just once get the screen resolution. If it changes in the process bad luck!
 width = gtk.gdk.screen_width()
 height = gtk.gdk.screen_height()
 resolution = str(width) + "x" + str(height)
 #resolution1 = display.Display().screen().root.get_geometry().height
-print resolution
+#print resolution
 
 
 class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
@@ -114,25 +102,7 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
             pass  # let's keep iterating
 
     def capture_image(self, event):
-        #screensize width heigth
-        screensize = self.get_screen_size()
-
-        #Position x,y
-        x = event.Position[0]
-        y = event.Position[1]
-
-        #take the highest point left and the lowest point right. (to form a rectangle cropbox)
-        x1 = x - (screensize.x / 4)
-        x2 = x + (screensize.x / 4)
-        y1 = y - (screensize.y / 4)
-        y2 = y + (screensize.y / 4)
-
-        #width and height
-        w = x2 - x1
-        h = y2 - y1
-
-        #take a cropbox
-        image_data = pyautogui.screenshot(region=((x1,y1, w, h)))
+        image_data =  pyautogui.screenshot()
 
         return image_data
 
@@ -261,8 +231,7 @@ class OnClickImageCaptureSecondStage(SecondStageBaseEventClass):
                 self.subsettings['General']['Log Subdirectory'],
                 self.last_image_name)
             qualitysetting = self.subsettings['General']['Click Image Quality']
-            #cv2.imwrite(savefilename, image_data)
-            image_data.save(savefilename)#, quality=qualitysetting)
+            image_data.save(savefilename, quality=qualitysetting)
         except Empty:
             # Check if the minute has rolled over, if so, write it out.
             if self.eventlist[:2] != range(2) and \

@@ -32,11 +32,7 @@ import re
 import sys
 import datetime
 import pyautogui
-if os.name == 'nt':
-    import win32api
-    import ImageGrab
-elif os.name == 'posix':
-    import gtk
+if os.name == 'nt' or os.name == 'posix':
     pass
 else:
     print "OS is not recognised as windows or linux"
