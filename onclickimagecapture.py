@@ -228,6 +228,7 @@ class OnClickImageCaptureSecondStage(SecondStageBaseEventClass):
                 self.settings['General']['Log Directory'],
                 self.subsettings['General']['Log Subdirectory'],
                 self.last_image_name)
+            savefilename.replace(":","")
             qualitysetting = self.subsettings['General']['Click Image Quality']
             image_data.save(savefilename, quality=qualitysetting)
         except Empty:
@@ -274,7 +275,7 @@ class OnClickImageCaptureSecondStage(SecondStageBaseEventClass):
         fhour = '%Y%m%d_%H%M%S_'
         today = datetime.datetime.today()
         filepattern = re.sub(r'%time%', today.strftime(fhour) + str(today.microsecond), filepattern)
-        filepattern = re.sub(r'%processname%', process_name, filepattern)
+        #filepattern = re.sub(r'%processname%', process_name, filepattern)
         filepattern = re.sub(r'%username%', username, filepattern)
         filepattern = filepattern + '.' + fileextension
         self.last_image_name = filepattern
