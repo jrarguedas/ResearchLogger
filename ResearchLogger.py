@@ -28,14 +28,13 @@ import os
 import os.path
 import time
 import sys
-import myutils
 if os.name == 'posix':
     import pyxhook as hooklib
 elif os.name == 'nt':
     import pyHook as hooklib
     import pythoncom
 else:
-    print "El SO no se reconoce como Linux o Windows"
+    print ("El SO no se reconoce como Linux o Windows")
     exit()
 
 import re

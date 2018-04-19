@@ -33,7 +33,6 @@ import re
 import time
 from Queue import Queue, Empty
 
-import gtk
 import pyautogui
 
 from baseeventclasses import *
@@ -50,8 +49,7 @@ from constants import MLEFT, MMIDDLE, MRIGHT, MOUSE, IELIST, IEVENTLISTSIZE
 
 
 # Just once get the screen resolution. If it changes in the process bad luck!
-width = gtk.gdk.screen_width()
-height = gtk.gdk.screen_height()
+width,height = pyautogui.size()
 resolution = str(width) + "x" + str(height)
 #resolution1 = display.Display().screen().root.get_geometry().height
 #print resolution
@@ -102,15 +100,15 @@ class OnClickImageCaptureFirstStage(FirstStageBaseEventClass):
             pass  # let's keep iterating
 
     def capture_image(self, event):
-        image_data =  pyautogui.screenshot()
+        image_data = pyautogui.screenshot()
 
         return image_data
 
-    def get_screen_size(self):
-        width = gtk.gdk.screen_width()
-        height = gtk.gdk.screen_height()
-
+    # get screen size
+    def getScreenSize(self):
+        width,height = pyautogui.size()
         return Point(width,height)
+
 
     def get_process_name(self, event):
         '''
