@@ -228,7 +228,6 @@ class OnClickImageCaptureSecondStage(SecondStageBaseEventClass):
                 self.settings['General']['Log Directory'],
                 self.subsettings['General']['Log Subdirectory'],
                 self.last_image_name)
-            savefilename.replace(":","")
             qualitysetting = self.subsettings['General']['Click Image Quality']
             image_data.save(savefilename, quality=qualitysetting)
         except Empty:
